@@ -8,6 +8,7 @@ if ('serviceWorker' in navigator) {
                 .register('./sw.js', {type: "module"});
             console.log('Service worker registrada! reg');
             postNews();
+            recenteNews();
         } catch (err) {
             console.log(' Service worker registro falhou:', err);
         }
@@ -20,28 +21,48 @@ var url = `https://newsapi.org/v2/everything?q=front-end&apiKey=${apiKey}`;
 
 
 const main = document.querySelector('main');
+const section = document.querySelector('section');
 
 async function postNews() {
     const res = await fetch(url); const data = await res.json();
     main.innerHTML = data.articles.map(createArticle).join('\n');
 }
+async function recenteNews() {
+  const res = await fetch(url); const data = await res.json();
+  section.innerHTML = createRecente(  data.articles[0]);
+}
+
 
 function createArticle(article) { 
-    console.log(article);
-    return `
-    <div class="article">
-    <a href="${article.url}" target="_blank">
-    <img src="${article.urlToImage}" class="image" alt="${article.content}"/>
-    <h2>${article.title}</h2>
-    <p>${article.description}</p>
-    </a>
-    </div>
-    `
+  console.log(article);
+  return `
+  <div class="article">
+  <a href="${article.url}" target="_blank">
+  <img src="${article.urlToImage}" class="image" alt="${article.content}"/>
+  <h2>${article.title}</h2>
+  <p>${article.description}</p>
+  </a>
+  </div>
+  `
+}
+
+function createRecente(recente) { 
+  console.log(recente);
+  return `
+  <div class="recente">
+  <a href="${recente.url}" target="_blank">
+  <img src="${recente.urlToImage}" class="image" alt="${recente.content}"/>
+  <h2>${recente.title}</h2>
+  <p>${recente.description}</p>
+  </a>
+  </div>
+  `
 }
 
 function cliqueiBuscaplease() {
     var busca = document.getElementById('barraPesquisa').value;
     url = `https://newsapi.org/v2/everything?q=${busca}&apiKey=${apiKey}`;
-    postNews(); // Chama a função postNews para atualizar os resultados com base na nova pesquisa
+    postNews();
+    recenteNews(); // Chama a função postNews para atualizar os resultados com base na nova pesquisa
     console.log(busca);
 }
